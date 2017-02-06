@@ -2,7 +2,18 @@ import numpy as np
 
 
 class BasicLogistic(object):
-    """docstring for Logit"""
+    """
+    Object to perform basic logistic regression.
+
+    Currently has Methods for:
+        - Sigmoid function
+
+    Need Methods for:
+        - Cost function
+        - Regularization
+        - Gradient Descent
+        - Prediction function
+    """
     def __init__(self, z):
         super().__init__()
         self.z = z
@@ -11,7 +22,6 @@ class BasicLogistic(object):
         g = np.array([[0 for cols in range(2)] for rows in range(4)])
         for row in z:
             g = row
-
         return g
 
 
