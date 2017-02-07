@@ -16,7 +16,7 @@ class BasicLogistic():
     """
     def __init__(self, X_train, y_train, theta, reg_lamda):
         super().__init__()
-        #self.z = z
+        # self.z = z
         self.X_train = X_train
         self.y_train = y_train
         self.theta = theta
@@ -57,23 +57,35 @@ def main():
     # Disclaimer!
     print('Still Hacking...')
 
-    # Temp data to pass through model
-    X_train = np.array([[1, 0, 1], [0, 1, 1], [1, 0, 0]])
-    y_train = np.transpose(np.array([1, 0, 1]))
-    theta = np.transpose(np.array([0, 0, 0]))
+    # Load Grade Data
+    grade_data = np.genfromtxt('grades.txt', delimiter=',')
+    m = len(grade_data)
+
+    # Load Training Data
+    X_train = grade_data[:, 0], grade_data[:, 1]
+    y_train = grade_data[:, 2]
+
+    # Initialize parameters at 0 (okay for linear/logistic regression)
+    theta = np.array([0 for rows in range(m)])
+
+    # Lambda value for regularization, if needed
     reg_lambda = 0.1
-    print('X Training Set: ', X_train)
-    print('y training Set: ', y_train)
-    print('Initial Parameters: ', theta)
+
+    # Console Logs for Testing
+    print('Raw Data Size: ', grade_data.shape)
+    print('X Training Set: ', X_train.shape)
+    print('y training Set: ', y_train.shape)
+    print('Initial Parameters: ', theta.shape)
     print('Lamda set to: ', reg_lambda)
     print(type(X_train))
-    print(X_train.shape)
 
-    # Testing Method
-    lr = BasicLogistic(X_train, y_train, theta, reg_lambda)  # params: X_train, y_train, theta, reg_lambda
+    # Testing Class Methods
+    '''
+    lr = BasicLogistic(X_train, y_train, theta, reg_lambda)
     print(lr.sigmoid(X_train))
     print(lr.hypothesis(X_train, theta))
     print(lr.cost_function(X_train, y_train, theta))
+    '''
 
 
 if __name__ == '__main__':
