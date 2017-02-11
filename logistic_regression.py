@@ -11,8 +11,9 @@ class BasicLogistic():
         - Cost function
 
     Need Methods for:
-        - Regularization
         - Gradient Descent
+        - Regularization
+        - Feature Mapping
     '''
     def __init__(self, X_train, y_train, theta, reg_lamda):
         super().__init__()
@@ -48,6 +49,9 @@ class BasicLogistic():
         # Return Cost
         cost = alpha * (neg_case - pos_case)
         return cost
+
+    def min_cost(self):
+        pass
 
     def map_feature(X, order):
         pass
