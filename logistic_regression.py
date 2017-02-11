@@ -42,12 +42,15 @@ class BasicLogistic():
         # Compute cost function
         for i in range(0, m):
             pred = self.sigmoid(theta[i, 0] * X_train[i])  # Hypothesis
+            
             cost = -y_train[i] * np.math.log(pred[i])
             cost -= (1 - y_train[i]) * np.math.log(1 - pred[i])
             cost *= (1/m)
 
+            #grad = 
+
         # Return unregularized costs
-        return cost
+        return cost#, grad
 
     def map_feature(X, order):
         pass
@@ -70,12 +73,13 @@ def process_csv(file_path, test_size=0.5):
 
     # Seperate labels and examples
     X = np.zeros((m_raw, n_raw - 1))  # Exclude label column
+    y = np.zeros((m_raw, 1))  # init label vector
     for col in range(n_raw):  # Over all columns in array
         bin_flag = np.unique(raw_data[:, col]) == [0, 1]
         if type(bin_flag) is bool:  # flag is False if binary, list if True
             X[:, col] = raw_data[:, col]  # Assign to X examples
         else:  # If flag matches binary test, it return a list of Trues
-            y = raw_data[:, col]  # Assign to y labels
+            y[:, 0] = raw_data[:, col]  # Assign to y labels
 
     # Split
     [X_train, X_test,
@@ -101,17 +105,20 @@ def main():
      y_train, y_test, m, n] = process_csv(file_path)
 
     # STEP 2: Hyperparameters
-    theta = np.array([0 for rows in range(n + 1)])  # Initialize parameters
+    theta = np.array([[0 for param in range(n + 1)]])  # Initialize parameters
     reg_lambda = 1  # Lambda value for regularization, if needed
 
     # Step 3: Training
+    '''
     lr = BasicLogistic(X_train, y_train, theta, reg_lambda)
     print(lr.sigmoid(X_train))
     print(lr.cost_function(X_train, y_train, theta))
+    '''
 
     # Console Logs for Testing
     print('X Training Set: ', X_train.shape)
     print('y training Set: ', y_train.shape)
+    print('y transpose: ', np.transpose(y_train).shape)
     print('Initial Parameters: ', theta.shape)
     print('Lamda set to: ', reg_lambda)
     print(type(X_train))
