@@ -23,7 +23,11 @@ class BasicLogistic():
         self.reg_lamda = reg_lamda
 
     def sigmoid(self, z, derivative=False):
-        ''' Logistic Sigmoid function classifies binary values '''
+        ''' 
+        Logistic Sigmoid function used for logistic regression and 
+        Neural Network Classifiers.  Derivative of the sigmoid used
+        for the latter.
+        '''
         # Compute derivative or not
         if not derivative:
             return 1 / (1 + np.exp(-z))
@@ -52,10 +56,10 @@ class BasicLogistic():
         pass
 
 
-def process_csv(file_path, ratio=0.5):
+def process_csv(file_path, test_size=0.5):
     '''
-    1) Load data from a file path and split into train and test sets based on a 
-    specified ratio which set by default to a 50-50 split.
+    1) Load data from a file path and split into train and test sets based on
+    specified test ratio which is 50-50 by default.
 
     2) Adds an intercept column to the X training examples to make the math
     cleaner... Python does not make matrix operations easy.
@@ -67,36 +71,40 @@ def process_csv(file_path, ratio=0.5):
     # Seperate labels and examples
     X = np.zeros((m_raw, n_raw - 1))  # Exclude label column
     for col in range(n_raw):  # Over all columns in array
-        bin_flag = np.unique(raw_data[:, col]) == [0,1]
-        if type(bin_flag) is bool:  # flag will be False if binary, list if True
+        bin_flag = np.unique(raw_data[:, col]) == [0, 1]
+        if type(bin_flag) is bool:  # flag is False if binary, list if True
             X[:, col] = raw_data[:, col]  # Assign to X examples
-        else: # If flag matches binary test, it return a list of Trues
+        else:  # If flag matches binary test, it return a list of Trues
             y = raw_data[:, col]  # Assign to y labels
 
     # Split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=ratio)
+    [X_train, X_test,
+     y_train, y_test] = train_test_split(X, y, test_size=test_size)
 
     # Add intercept column to training examples
-    m, n = X_train.shape  # Dimensions, m x n
-    ones = np.ones(m, dtype='int')
-    col_vecs = [X_train[:, 0], X_train[:, 1]]
-    X_train = np.vstack((ones, col_vecs)).T
+    m, n = X_train.shape  # Dimensions, m x n of X train examples
+    ones = np.ones(m, dtype='int')  # Vector of ones
+    col_vecs = []  # init a list which will store x columns
+    for col in range(n):  # n is number of columns across X_train
+        col_vecs.append(X_train[:, col])  # List cols of X_train for stacking
+    X_train = np.vstack((ones, col_vecs)).T  # Create tuple and bind X_train
 
     # Return processed data
-    return [X_train, X_test, y_train, y_test]
+    return [X_train, X_test,
+            y_train, y_test, m, n]  # Return Train and Test sets & X train dim
 
 
 def main():
     # STEP 1: Process data
     file_path = 'grades.txt'
-    [X_train, X_test, y_train, y_test] = process_csv(file_path)
+    [X_train, X_test,
+     y_train, y_test, m, n] = process_csv(file_path)
 
     # STEP 2: Hyperparameters
-    m, n = X_train.shape
     theta = np.array([0 for rows in range(n + 1)])  # Initialize parameters
     reg_lambda = 1  # Lambda value for regularization, if needed
 
-    # Training
+    # Step 3: Training
     lr = BasicLogistic(X_train, y_train, theta, reg_lambda)
     print(lr.sigmoid(X_train))
     print(lr.cost_function(X_train, y_train, theta))
