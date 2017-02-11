@@ -39,18 +39,15 @@ class BasicLogistic():
         # Initialize variables
         m = len(y_train)  # Number of traning examples
 
-        # Compute cost function
-        for i in range(0, m):
-            pred = self.sigmoid(theta[i, 0] * X_train[i])  # Hypothesis
-            
-            cost = -y_train[i] * np.math.log(pred[i])
-            cost -= (1 - y_train[i]) * np.math.log(1 - pred[i])
-            cost *= (1/m)
+        # Vectorized Cost Function
+        alpha = (1 / m)
+        pred = self.sigmoid(X_train * theta)
+        neg_case = -y_train.T * np.log(pred)
+        pos_case = (1 - y_train.T) * np.log(1 - pred)
 
-            #grad = 
-
-        # Return unregularized costs
-        return cost#, grad
+        # Return Cost
+        cost = alpha * (neg_case - pos_case)
+        return cost
 
     def map_feature(X, order):
         pass
@@ -119,7 +116,7 @@ def main():
     print('X Training Set: ', X_train.shape)
     print('y training Set: ', y_train.shape)
     print('y transpose: ', np.transpose(y_train).shape)
-    print('Initial Parameters: ', theta.shape)
+    print('Params: {0} Size: {1}'.format(theta, theta.shape))
     print('Lamda set to: ', reg_lambda)
     print(type(X_train))
 
