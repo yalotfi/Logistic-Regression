@@ -1,19 +1,19 @@
 import numpy as np
+from sklearn.cross_validation import train_test_split
 
 
 class BasicLogistic():
-    """
+    '''
     Object to perform basic logistic regression.
 
     Currently has Methods for:
         - Logistic Sigmoid function
-        - Hypothesis function
         - Cost function
 
     Need Methods for:
         - Regularization
         - Gradient Descent
-    """
+    '''
     def __init__(self, X_train, y_train, theta, reg_lamda):
         super().__init__()
         # self.z = z
@@ -30,49 +30,48 @@ class BasicLogistic():
         else:
             return z * (1 - z)
 
-    def hypothesis(self, X_train, theta):
-        ''' Hypothesis function (prediction method) '''
-        # Simple predictor function
-        return self.sigmoid(X_train * theta)
-
     def cost_function(self, X_train, y_train, theta):
         ''' Cost function J(theta) to be minimized '''
         # Initialize variables
-        m = len(self.y_train)  # Number of traning examples
-        preds = self.hypothesis(X_train, theta)
+        m = len(y_train)  # Number of traning examples
 
-        # Vectorized cost function (no iteration needed)
-        cost = -np.transpose(y_train) * np.log(preds)
-        cost -= (1 - np.transpose(y_train)) * np.log(1 - (preds))
-        cost *= (1 / m)
+        # Compute cost function
+        for i in range(0, m):
+            pred = self.sigmoid(theta[i, 0] * X_train[i])  # Hypothesis
+            cost = -y_train[i] * np.math.log(pred[i])
+            cost -= (1 - y_train[i]) * np.math.log(1 - pred[i])
+            cost *= (1/m)
 
         # Return unregularized costs
         return cost
+
+    def map_feature(X, order):
+        pass
 
     def regularization(self, reg_lamda):
         pass
 
 
-def main():
-    # Disclaimer!
-    print('Still Hacking...')
-
+def process_csv(file_path):
     # Load Grade Data
-    grade_data = np.genfromtxt('grades.txt', delimiter=',')
-    m = len(grade_data)
+    raw_data = np.genfromtxt(file_path, delimiter=',')
+    X = raw_data[:, 0:2]
+    y = raw_data[:, 2]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5)
+    return [X_train, X_test, y_train, y_test]
 
-    # Load Training Data
-    X_train = grade_data[:, 0], grade_data[:, 1]
-    y_train = grade_data[:, 2]
 
-    # Initialize parameters at 0 (okay for linear/logistic regression)
-    theta = np.array([0 for rows in range(m)])
+def main():
+    # Load processed data
+    file_path = 'grades.txt'
+    [X_train, X_test, y_train, y_test] = process_csv(file_path)
 
-    # Lambda value for regularization, if needed
-    reg_lambda = 0.1
+    # Hyperparameters
+    m = len(X_train)  # length of the training set
+    theta = np.array([0 for rows in range(m)])  # Initialize parameters at 0
+    reg_lambda = 1  # Lambda value for regularization, if needed
 
     # Console Logs for Testing
-    print('Raw Data Size: ', grade_data.shape)
     print('X Training Set: ', X_train.shape)
     print('y training Set: ', y_train.shape)
     print('Initial Parameters: ', theta.shape)
@@ -80,12 +79,9 @@ def main():
     print(type(X_train))
 
     # Testing Class Methods
-    '''
     lr = BasicLogistic(X_train, y_train, theta, reg_lambda)
     print(lr.sigmoid(X_train))
-    print(lr.hypothesis(X_train, theta))
     print(lr.cost_function(X_train, y_train, theta))
-    '''
 
 
 if __name__ == '__main__':
