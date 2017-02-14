@@ -24,8 +24,8 @@ class BasicLogistic():
         self.reg_lamda = reg_lamda
 
     def sigmoid(self, z, derivative=False):
-        ''' 
-        Logistic Sigmoid function used for logistic regression and 
+        '''
+        Logistic Sigmoid function used for logistic regression and
         Neural Network Classifiers.  Derivative of the sigmoid used
         for the latter.
         '''
@@ -35,18 +35,29 @@ class BasicLogistic():
         else:
             return z * (1 - z)
 
+    def regularization(self, reg_lamda):
+        pass
+
     def cost_function(self, X_train, y_train, theta):
         '''
         Cost function J(theta) to be minimized.
-        The calculated cost uses a series of matrices.
+        For vectorized linear algebra, the data needs to be type matrices.
         '''
-        # Initialize variables
+        # Check data types of function params:
+        args = locals()  # Dictionary of local variables
+        for key in args:
+            if 'matrix' in str(type(args[key])):  # Check if type matrix True
+                print(args.keys())  # Log params passed as type matrix
+            else:
+                args[key] = np.matrix(args[key])
+
+        # Initialize helper variables
         m = len(y_train)  # Number of traning examples
         alpha = (1 / m)  # Cost Function constant
 
-        # Vectorized Cost Function
+        # Vectorized Cost Function              # intuition for Vectorization:
         pred = self.sigmoid(X_train * theta.T)  # (70x3)*(3x1)=(70x1)
-        neg_case = -y_train.T * np.log(pred)  #  (1x70)*(70*1)=(1x1)
+        neg_case = -y_train.T * np.log(pred)  # (1x70)*(70*1)=(1x1)
         pos_case = (1 - y_train.T) * np.log(1 - pred)  # (1x70)*(70x1)=(1x1)
 
         # Return Cost
@@ -127,7 +138,6 @@ def main():
     # Step 3: Training
     lr = BasicLogistic(X_train, y_train, theta, reg_lambda)
     print(lr.sigmoid((X_train * theta)[0:10, :]))
-    #print(lr.cost_function(X_train, y_train, theta))
 
 
 if __name__ == '__main__':
