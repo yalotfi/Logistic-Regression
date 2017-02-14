@@ -36,31 +36,31 @@ class BasicLogistic():
             return z * (1 - z)
 
     def cost_function(self, X_train, y_train, theta):
-        ''' Cost function J(theta) to be minimized '''
+        '''
+        Cost function J(theta) to be minimized.
+        The calculated cost uses a series of matrices.
+        '''
         # Initialize variables
         m = len(y_train)  # Number of traning examples
+        alpha = (1 / m)  # Cost Function constant
 
         # Vectorized Cost Function
-        alpha = (1 / m)
-        pred = self.sigmoid(X_train * theta)
-        neg_case = -y_train.T * np.log(pred)
-        pos_case = (1 - y_train.T) * np.log(1 - pred)
+        pred = self.sigmoid(X_train * theta.T)  # (70x3)*(3x1)=(70x1)
+        neg_case = -y_train.T * np.log(pred)  #  (1x70)*(70*1)=(1x1)
+        pos_case = (1 - y_train.T) * np.log(1 - pred)  # (1x70)*(70x1)=(1x1)
 
         # Return Cost
-        cost = alpha * (neg_case - pos_case)
+        cost = alpha * (neg_case - pos_case)  # (1x1)-(1x1)=(1x1)
         return cost
 
     def min_cost(self):
         pass
 
-    def map_feature(X, order):
-        pass
-
-    def regularization(self, reg_lamda):
+    def map_feature(X):
         pass
 
 
-def process_csv(file_path, test_size=0.5):
+def process_csv(file_path, test_size=0.3):
     '''
     1) Load data from a file path and split into train and test sets based on
     specified test ratio which is 50-50 by default.
@@ -94,6 +94,12 @@ def process_csv(file_path, test_size=0.5):
         col_vecs.append(X_train[:, col])  # List cols of X_train for stacking
     X_train = np.vstack((ones, col_vecs)).T  # Create tuple and bind X_train
 
+    # Convert to numpy matrices:
+    X_train = np.matrix(X_train)
+    y_train = np.matrix(y_train)
+    X_test = np.matrix(X_test)
+    y_test = np.matrix(y_test)
+
     # Return processed data
     return [X_train, X_test,
             y_train, y_test, m, n]  # Return Train and Test sets & X train dim
@@ -106,15 +112,8 @@ def main():
      y_train, y_test, m, n] = process_csv(file_path)
 
     # STEP 2: Hyperparameters
-    theta = np.array([[0 for param in range(n + 1)]])  # Initialize parameters
+    theta = np.matrix([[0 for param in range(n + 1)]])  # Initialize params
     reg_lambda = 1  # Lambda value for regularization, if needed
-
-    # Step 3: Training
-    '''
-    lr = BasicLogistic(X_train, y_train, theta, reg_lambda)
-    print(lr.sigmoid(X_train))
-    print(lr.cost_function(X_train, y_train, theta))
-    '''
 
     # Console Logs for Testing
     print('X Training Set: ', X_train.shape)
@@ -123,6 +122,12 @@ def main():
     print('Params: {0} Size: {1}'.format(theta, theta.shape))
     print('Lamda set to: ', reg_lambda)
     print(type(X_train))
+    print(X_train[0:10, :])
+
+    # Step 3: Training
+    lr = BasicLogistic(X_train, y_train, theta, reg_lambda)
+    print(lr.sigmoid((X_train * theta)[0:10, :]))
+    #print(lr.cost_function(X_train, y_train, theta))
 
 
 if __name__ == '__main__':
