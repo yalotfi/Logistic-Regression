@@ -8,6 +8,7 @@ class BasicLogistic():
 
     Currently has Methods for:
         - Logistic Sigmoid function
+        - Hypothesis Function
         - Cost function
         - Compute Gradient
 
@@ -48,14 +49,6 @@ class BasicLogistic():
         conversion produces cleaner code. Writing vectorized code is less
         error prone, easy to read, and usually faster than iterative loops.
         '''
-        # Check data types of function params:
-        args = locals()  # Dictionary of local variables
-        for key in args:
-            if 'matrix' in str(type(args[key])):  # Check if type matrix True
-                pass
-            else:
-                args[key] = np.matrix(args[key])
-
         # Initialize helper variables
         m = len(y_train)  # Number of traning examples
         alpha = (1 / m)  # Cost Function constant
@@ -110,7 +103,7 @@ def process_csv(file_path, test_size=0.3):
         else:  # If flag matches binary test, it return a list of Trues
             y[:, 0] = raw_data[:, col]  # Assign to y labels
 
-    # Split
+    # Split training set and coerce to matrices
     [X_train, X_test,
      y_train, y_test] = train_test_split(X, y, test_size=test_size)
 
@@ -122,6 +115,9 @@ def process_csv(file_path, test_size=0.3):
         col_vecs.append(X_train[:, col])  # List cols of X_train for stacking
     X_train = np.vstack((ones, col_vecs)).T  # Create tuple and bind X_train
 
+    # Initialize parameters, theta
+    theta = np.matrix([[0 for param in range(n + 1)]])
+
     # Convert to numpy matrices:
     X_train = np.matrix(X_train)
     y_train = np.matrix(y_train)
@@ -130,17 +126,17 @@ def process_csv(file_path, test_size=0.3):
 
     # Return processed data
     return [X_train, X_test,
-            y_train, y_test, m, n]  # Return Train and Test sets & X train dim
+            y_train, y_test, theta]  # Return train, test, and parameter sets
 
 
 def main():
     # STEP 1: Process data
     file_path = 'grades.txt'
     [X_train, X_test,
-     y_train, y_test, m, n] = process_csv(file_path)
+     y_train, y_test, theta] = process_csv(file_path)
 
     # STEP 2: Hyperparameters
-    theta = np.matrix([[0 for param in range(n + 1)]])  # Initialize params
+    # theta = np.matrix([[0 for param in range(n + 1)]])  # Initialize params
     reg_lambda = 1  # Lambda value for regularization, if needed
 
     # Console Logs for Testing
