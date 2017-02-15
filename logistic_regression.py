@@ -25,9 +25,8 @@ class BasicLogistic():
 
     def sigmoid(self, z, derivative=False):
         '''
-        Logistic Sigmoid function used for logistic regression and
-        Neural Network Classifiers.  Derivative of the sigmoid used
-        for the latter.
+        Logistic Sigmoid function used for building classifiers. The
+        Derivative of the sigmoid is necessary in Neural Network classifiers.
         '''
         # Compute derivative or not
         if not derivative:
@@ -40,14 +39,18 @@ class BasicLogistic():
 
     def cost_function(self, X_train, y_train, theta):
         '''
-        Cost function J(theta) to be minimized.
-        For vectorized linear algebra, the data needs to be type matrices.
+        Cost function J(theta) to be minimized. To perform linear algebra,
+        it's best if the data is of type matrix. If data is passed as a numpy
+        array, the function will just convert it to a matrix. You can still
+        use dot products to perform the same operations on arrays, but this
+        conversion produces cleaner code. Writing vectorized code is less
+        error prone, easy to read, and usually faster than iterative loops.
         '''
         # Check data types of function params:
         args = locals()  # Dictionary of local variables
         for key in args:
             if 'matrix' in str(type(args[key])):  # Check if type matrix True
-                print(args.keys())  # Log params passed as type matrix
+                pass
             else:
                 args[key] = np.matrix(args[key])
 
@@ -55,7 +58,7 @@ class BasicLogistic():
         m = len(y_train)  # Number of traning examples
         alpha = (1 / m)  # Cost Function constant
 
-        # Vectorized Cost Function              # intuition for Vectorization:
+        # Vectorized Cost Function              # Intuition:
         pred = self.sigmoid(X_train * theta.T)  # (70x3)*(3x1)=(70x1)
         neg_case = -y_train.T * np.log(pred)  # (1x70)*(70*1)=(1x1)
         pos_case = (1 - y_train.T) * np.log(1 - pred)  # (1x70)*(70x1)=(1x1)
