@@ -4,14 +4,14 @@ from sklearn.cross_validation import train_test_split
 
 class BasicLogistic():
     '''
-    Object to perform basic logistic regression.
+    Class to perform basic logistic regression.
 
     Currently has Methods for:
         - Logistic Sigmoid function
         - Cost function
+        - Compute Gradient
 
     Need Methods for:
-        - Gradient Descent
         - Regularization
         - Feature Mapping
     '''
@@ -33,8 +33,10 @@ class BasicLogistic():
             return 1 / (1 + np.exp(-z))
         else:
             return z * (1 - z)
+    def hypothesis(self, X_train, theta):
+        return self.sigmoid(X_train * theta.T)
 
-    def regularization(self, reg_lamda):
+    def regularization(self, theta, reg_lamda):
         pass
 
     def cost_function(self, X_train, y_train, theta):
@@ -59,7 +61,7 @@ class BasicLogistic():
         alpha = (1 / m)  # Cost Function constant
 
         # Vectorized Cost Function              # Intuition:
-        pred = self.sigmoid(X_train * theta.T)  # (70x3)*(3x1)=(70x1)
+        pred = self.hypothesis(X_train, theta)  # (70x3)*(3x1)=(70x1)
         neg_case = -y_train.T * np.log(pred)  # (1x70)*(70*1)=(1x1)
         pos_case = (1 - y_train.T) * np.log(1 - pred)  # (1x70)*(70x1)=(1x1)
 
@@ -67,8 +69,20 @@ class BasicLogistic():
         cost = alpha * (neg_case - pos_case)  # (1x1)-(1x1)=(1x1)
         return cost
 
-    def min_cost(self):
-        pass
+    def compute_grad(self, X_train, y_train, theta):
+        '''
+        Compute the gradient, or partial derivative, of the calculated cost.
+        This is used to optimize the learning algorithm's parameters that fit
+        some prediction or hypothesis function to the data. Minimizing the
+        cost by an optimization function is basically searching for the global
+        minimum of the function. How best to do that is up for debate.
+        '''
+        m = len(X_train)
+        pred = self.hypothesis(X_train, theta)
+        diff = pred - y_train
+        grad = (1/m) * X_train.T * diff
+        
+        return grad
 
     def map_feature(X):
         pass
