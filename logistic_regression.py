@@ -19,7 +19,6 @@ class BasicLogistic():
     '''
     def __init__(self, X_train, y_train, theta, reg_lamda):
         super().__init__()
-        # self.z = z
         self.X_train = X_train
         self.y_train = y_train
         self.theta = theta
@@ -35,13 +34,13 @@ class BasicLogistic():
             return 1 / (1 + np.exp(-z))
         else:
             return z * (1 - z)
-    def hypothesis(self, X_train, theta):
-        return self.sigmoid(X_train * theta.T)
+    def hypothesis(self):
+        return self.sigmoid(self.X_train * self.theta.T)
 
     def regularization(self, theta, reg_lamda):
         pass
 
-    def cost_function(self, X_train, y_train, theta):
+    def cost_function(self):
         '''
         Cost function J(theta) to be minimized. To perform linear algebra,
         it's best if the data is of type matrix. If data is passed as a numpy
@@ -51,24 +50,24 @@ class BasicLogistic():
         error prone, easy to read, and usually faster than iterative loops.
         '''
         # Check data types, convert to matrices
-        X_train = np.array(X_train)
-        y_train = np.matrix(y_train)
-        theta = np.matrix(theta)
+        # X_train = np.array(X_train)
+        # y_train = np.matrix(y_train)
+        # theta = np.matrix(theta)
 
         # Initialize helper variables
-        m = len(y_train)  # Number of traning examples
+        m = len(self.y_train)  # Number of traning examples
         alpha = (1 / m)  # Cost Function constant
 
         # Vectorized Cost Function              # Intuition:
-        pred = self.hypothesis(X_train, theta)  # (70x3)*(3x1)=(70x1)
-        neg_case = -y_train.T * np.log(pred)  # (1x70)*(70*1)=(1x1)
-        pos_case = (1 - y_train.T) * np.log(1 - pred)  # (1x70)*(70x1)=(1x1)
+        pred = self.hypothesis()  # (70x3)*(3x1)=(70x1)
+        neg_case = -self.y_train.T * np.log(pred)  # (1x70)*(70*1)=(1x1)
+        pos_case = (1 - self.y_train.T) * np.log(1 - pred)  # (1x70)*(70x1)=(1x1)
 
         # Return Cost
         cost = alpha * (neg_case - pos_case)  # (1x1)-(1x1)=(1x1)
         return cost
 
-    def compute_grad(self, X_train, y_train, theta):
+    def compute_grad(self):
         '''
         Compute the gradient, or partial derivative, of the calculated cost.
         This is used to optimize the learning algorithm's parameters that fit
@@ -76,10 +75,10 @@ class BasicLogistic():
         cost by an optimization function is basically searching for the global
         minimum of the function. How best to do that is up for debate.
         '''
-        m = len(X_train)
-        pred = self.hypothesis(X_train, theta)
-        diff = pred - y_train
-        grad = (1/m) * X_train.T * diff
+        m = len(self.X_train)
+        pred = self.hypothesis()
+        diff = pred - self.y_train
+        grad = (1/m) * self.X_train.T * diff
         
         return grad
 
