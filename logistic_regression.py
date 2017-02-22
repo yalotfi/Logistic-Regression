@@ -45,7 +45,7 @@ class BasicLogistic():
         '''
         return self.sigmoid(self.X_train.dot(self.theta.T))
 
-    def cost_function(self):
+    def cost_function(self, theta, X_train, y_train):
         '''
         Cost function J(theta) to be minimized. Calculating the total error
         is done by finding the distance from the actual label. In this case,
@@ -66,7 +66,7 @@ class BasicLogistic():
         cost = alpha * (neg_case - pos_case)  # (1x1)-(1x1)=(1x1)
         return cost[0][0]  # Return single value instead of array
 
-    def compute_grad(self):
+    def compute_grad(self, theta, X_train, y_train):
         '''
         Compute the gradient, or partial derivative, of the calculated cost.
         This is used to optimize the learning algorithm's parameters that fit
@@ -84,6 +84,14 @@ class BasicLogistic():
             grad[i] = (1/m) * sum_diff
         
         return grad
+
+    def optimize(self):
+        my_args = (self.X_train, self.y_train)
+        return fmin_bfgs(self.cost_function, 
+                         x0=self.theta, 
+                         args=my_args, 
+                         maxiter=400, 
+                         fprime=self.compute_grad)
 
     def map_feature(X):
         pass
