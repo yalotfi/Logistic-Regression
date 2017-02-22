@@ -35,22 +35,24 @@ class BasicLogistic():
         else:
             return z * (1 - z)
     def hypothesis(self):
+        '''
+        The hypothesis function predicts the value of y given input x and
+        parameters theta. In classification, predictions are passed through
+        a sigmoidal function where values closer to 1 have a higher
+        probability of being 1 and vice versa for values closer to zero.
+        This function is used in calculating the error and partial derivative
+        for fitting the best decision boundary on the given data set.
+        '''
         return self.sigmoid(self.X_train.dot(self.theta.T))
 
     def cost_function(self):
         '''
-        Cost function J(theta) to be minimized. To perform linear algebra,
-        it's best if the data is of type matrix. If data is passed as a numpy
-        array, the function will just convert it to a matrix. You can still
-        use dot products to perform the same operations on arrays, but this
-        conversion produces cleaner code. Writing vectorized code is less
-        error prone, easy to read, and usually faster than iterative loops.
+        Cost function J(theta) to be minimized. Calculating the total error
+        is done by finding the distance from the actual label. In this case,
+        if the label is 1, then the negative case is computed. Conversely, if
+        the label is 0, then the positive case is computed. The magic of this
+        cost function is that it represents either case in one equation.
         '''
-        # Check data types, convert to matrices
-        # X_train = np.array(X_train)
-        # y_train = np.matrix(y_train)
-        # theta = np.matrix(theta)
-
         # Initialize helper variables
         m = len(self.y_train)  # Number of traning labels
         alpha = (1 / m)  # Cost Function constant
