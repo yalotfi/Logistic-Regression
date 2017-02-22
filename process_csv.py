@@ -37,13 +37,7 @@ def process_csv(file_path, test_size=0.3):
     X_train = np.vstack((ones, col_vecs)).T  # Create tuple and bind X_train
 
     # Initialize parameters, theta
-    theta = np.matrix([[0 for param in range(n + 1)]])
-
-    # Convert to numpy matrices:
-    X_train = np.matrix(X_train)
-    y_train = np.matrix(y_train)
-    X_test = np.matrix(X_test)
-    y_test = np.matrix(y_test)
+    theta = np.array([[0 for param in range(n + 1)]])
 
     # Return processed data
     return [X_train, X_test,

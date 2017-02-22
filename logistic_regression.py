@@ -35,10 +35,7 @@ class BasicLogistic():
         else:
             return z * (1 - z)
     def hypothesis(self):
-        return self.sigmoid(self.X_train * self.theta.T)
-
-    def regularization(self, theta, reg_lamda):
-        pass
+        return self.sigmoid(self.X_train.dot(self.theta.T))
 
     def cost_function(self):
         '''
@@ -55,17 +52,17 @@ class BasicLogistic():
         # theta = np.matrix(theta)
 
         # Initialize helper variables
-        m = len(self.y_train)  # Number of traning examples
+        m = len(self.y_train)  # Number of traning labels
         alpha = (1 / m)  # Cost Function constant
 
         # Vectorized Cost Function              # Intuition:
-        pred = self.hypothesis()  # (70x3)*(3x1)=(70x1)
-        neg_case = -self.y_train.T * np.log(pred)  # (1x70)*(70*1)=(1x1)
-        pos_case = (1 - self.y_train.T) * np.log(1 - pred)  # (1x70)*(70x1)=(1x1)
+        pred = self.hypothesis()  # #                (70x3)*(3x1)=(70x1)
+        neg_case = -self.y_train.T.dot(np.log(pred))  # (1x70)*(70*1)=(1x1)
+        pos_case = (1 - self.y_train.T).dot(np.log(1 - pred))  # (1x70)*(70x1)=(1x1)
 
         # Return Cost
         cost = alpha * (neg_case - pos_case)  # (1x1)-(1x1)=(1x1)
-        return cost
+        return cost[0][0]  # Return single value instead of array
 
     def compute_grad(self):
         '''
@@ -73,16 +70,23 @@ class BasicLogistic():
         This is used to optimize the learning algorithm's parameters that fit
         some prediction or hypothesis function to the data. Minimizing the
         cost by an optimization function is basically searching for the global
-        minimum of the function. How best to do that is up for debate.
+        minimum of the function.
         '''
         m = len(self.X_train)
         pred = self.hypothesis()
         diff = pred - self.y_train
-        grad = (1/m) * self.X_train.T * diff
+
+        grad = np.zeros(self.theta.size)
+        for i in range(self.theta.size):
+            sum_diff = diff.T.dot(self.X_train[:, i])
+            grad[i] = (1/m) * sum_diff
         
         return grad
 
     def map_feature(X):
+        pass
+
+    def regularization(self):
         pass
 
 
