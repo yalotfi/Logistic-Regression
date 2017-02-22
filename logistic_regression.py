@@ -1,6 +1,7 @@
 import numpy as np
 import process_csv
 from scipy.optimize import fmin_bfgs
+from scipy.optimize import minimize
 
 
 class BasicLogistic():
@@ -85,13 +86,29 @@ class BasicLogistic():
         
         return grad
 
-    def optimize(self):
+    def optimize(self, min_func='minimize'):
+        # Tuple of training examples
         my_args = (self.X_train, self.y_train)
-        return fmin_bfgs(self.cost_function, 
-                         x0=self.theta, 
-                         args=my_args, 
-                         maxiter=400, 
-                         fprime=self.compute_grad)
+
+        # Gradient Descent
+        min_theta = minimize(fun=self.cost_function,
+                             x0=self.theta,
+                             args=my_args,
+                             method='TNC',
+                             jac=self.compute_grad)
+
+        # BFGS algorithm
+        bfgs_theta = fmin_bfgs(self.cost_function,
+                               x0=self.theta,
+                               args=my_args,
+                               maxiter=400,
+                               fprime=self.compute_grad)
+
+        # Return minimized theta
+        if min_func == 'bfgs':
+            return bfgs_theta.x
+        else:
+            return min_theta.x
 
     def map_feature(X):
         pass
