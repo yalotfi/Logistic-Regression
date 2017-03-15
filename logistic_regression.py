@@ -1,20 +1,57 @@
 import numpy as np
-import process_csv as data
-from scipy.optimize import fmin_bfgs
+from scipy.optimize import fmin
 
 
-def normalize(X):
-    for col in range(X):
-        X[col]
-    return (X - np.mean(X, axis=0)) / np.std(X, axis=0)
+def process_data(file_path):
+    '''
+    Process the raw data set into 2D arrays of training and label examples.
+    This function should be expanded to include training, testing, and
+    cross validation sets. It also produces inital theta, outputting three
+    arrays.
+    '''
+    # Read in the Data
+    raw_data = np.genfromtxt(file_path, delimiter=',')
+
+    # Examples happen to be in first two cols and labels in the third
+    X = np.array(raw_data[:, :-1])
+    y = np.array(raw_data[:, -1:])
+
+    # Save dimensions
+    m, n = X.shape
+
+    # Insert intercept column for linear algebra
+    X = np.insert(X, 0, 1, axis=1)
+
+    # Initial parameters set to zero defined by shape (3x1)
+    init_theta = np.zeros(((n + 1), 1))
+
+    # Console logs to confirm data structure
+    print('\nLog data sizes:')
+    print('Examples: {0}\nX transpose: {1}\n'.format(
+        X.shape, X.T.shape))
+    print('Labels: {0}\ny transpose: {1}\n'.format(
+        y.shape, y.T.shape))
+    print('Initial thetas: {0}\ntheta Transpose: {1}'.format(
+        init_theta.shape, init_theta.T.shape))
+
+    return X, y, init_theta
 
 
 def sigmoid(z):
+    '''
+    This is the activation function for our hypothesis. The higher a predicted
+    value is, the more likely it will be classified as 1 and vice versa if to
+    be classified as 0.
+    '''
     return 1 / (1 + np.exp(-z))
 
 
 def hypothesis(theta, X_train):
-    return sigmoid(X_train.dot(theta.T))
+    '''
+    The hypothesis function takes parameters theta and examples X to produce
+    a predicted class.
+    '''
+    return sigmoid(X_train.dot(theta))
 
 
 def compute_cost(theta, X_train, y_train, reg_lambda=0):
@@ -24,12 +61,13 @@ def compute_cost(theta, X_train, y_train, reg_lambda=0):
 
     # Compute Cost
     pred = hypothesis(theta, X_train)
-    loss = -y_train.T.dot(np.log(pred)) - (1 - y_train.T).dot(np.log(1 - pred))
-    reg_cost = (reg_lambda / (2 * m)) * theta.dot(theta.T)
-    cost = const * loss + reg_cost
+    loss00 = -y_train.T.dot(np.log(pred))
+    loss01 = (1 - y_train.T).dot(np.log(1 - pred))
+    reg_cost = (reg_lambda / (2 * m)) * theta.T.dot(theta)
+    cost = const * (loss00 - loss01) + reg_cost
 
     # Return cost
-    return cost.flatten()
+    return float(cost)
 
 
 def compute_grad(theta, X_train, y_train, reg_lambda=0):
@@ -39,58 +77,66 @@ def compute_grad(theta, X_train, y_train, reg_lambda=0):
 
     # Compute Gradient Step
     pred = hypothesis(theta, X_train)
-    step = const * X_train.T.dot(pred - y_train).T
-    # reg_grad = (reg_lambda / m) * theta[:, 1:]
-    # grad01 = step[:, 0]
-    # grad02 = step[:, 1:] + reg_grad
-    # grad = np.append(grad01, grad02)
+    loss = pred - y_train
+    step = const * X_train.T.dot(loss)
+
+    # Add regularization term
+    reg_grad = (reg_lambda / m) * theta[1:, :]
+    grad00 = step[0, :]
+    grad01 = step[1:, :] + reg_grad
+    grads = np.append(grad00, grad01)
+
+    # Sanity Check over vector operations
+    print('\nCheck vector operations match up:')
+    print('Gradient Size: ', step.shape)  # Should be (n + 1, 1)
+    print('Reg Term: ', reg_grad.shape)  # Should be (n, 1)
+    print('First Gradient: ', grad00.shape)  # Should be (1,) - bias term
+    print('Other Gradients: ', grad01.shape)  # Same as reg_grad
+    print('All Gradients: ', grads.shape)  # Same as step
 
     # Return output
-    # return grad.flatten()
-    return step.flatten()
+    return grads
 
 
-def training(theta, X_train, y_train, max_iters):
-    def f(theta):
-        return compute_cost(theta, X_train, y_train)
-
-    def fprime(theta):
-        return compute_grad(theta, X_train, y_train)
-
-    opt_theta = fmin_bfgs(f, x0=theta, fprime=fprime, maxiter=max_iters)
-    return opt_theta
+def training(theta, X_train, y_train, reg_lambda=0, max_iters=400):
+    optimized = fmin(
+        compute_cost,
+        x0=theta,
+        args=(X_train, y_train, reg_lambda),
+        maxiter=max_iters,
+        full_output=True)
+    return optimized[0], optimized[1]
 
 
 def main():
     # STEP 1: Process data
     file_path = 'Data/grades.txt'
-    [X_train, X_test,
-     y_train, y_test] = data.process_csv(file_path, test_size=0)
-
-    # Initialize parameters, theta, and helper vars
-    init_theta = np.zeros([1, X_train.shape[1]])
+    X, y, init_theta = process_data(file_path)
+    # [X_train, X_test,
+    #  y_train, y_test] = data.process_csv(file_path, test_size=0)
 
     # STEP 2: Hyperparameters
     reg_lambda = 0
-    alpha = 0.000001
+    # alpha = 0.000001
     max_iters = 400
 
-    # Console logs to confirm data structure
-    print('X_train: {0} // X_train.T: {1}'.format(
-        X_train.shape, X_train.T.shape))
-    print('y_train: {0} // y_train.T: {1}'.format(
-        y_train.shape, y_train.T.shape))
-    print('Theta: {0} // Theta.T: {1}'.format(
-        init_theta.shape, init_theta.T.shape))
-    # print(init_theta[1:])
+    cost = compute_cost(init_theta, X, y, reg_lambda=reg_lambda)
+    grad = compute_grad(init_theta, X, y, reg_lambda=reg_lambda)
 
-    cost = compute_cost(init_theta, X_train, y_train, reg_lambda=reg_lambda)
-    grad = compute_grad(init_theta, X_train, y_train, reg_lambda=reg_lambda)
-    print('Min_Cost: {0} and Initial gradients: {1}'.format(cost, grad))
+    print('\nLog cost of starting parameters, theta:')
+    print('Min_Cost: {0} and Initial gradients: {1}'.format(
+        cost, grad)
+    )
+
+    print('\nLog data structure of starting cost and theta:')
+    print('Data Types for Cost: {0} and Gradient: {1}'.format(
+        type(cost), type(grad))
+    )
 
     # Step 3: Training
-    opt_theta_2 = training(init_theta, X_train, y_train, max_iters)
-    print('Optimized Thetas: ', opt_theta_2)
+    print('\nTraining Model:')
+    theta, min_cost = training(init_theta, X, y, reg_lambda, max_iters)
+    print('Optimized Thetas: {0}\nMinimum Cost: {1}'.format(theta, min_cost))
 
 
 if __name__ == '__main__':
