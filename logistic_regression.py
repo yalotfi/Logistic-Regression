@@ -1,4 +1,5 @@
 import numpy as np
+import sigmoid as sm
 from scipy.optimize import fmin
 
 
@@ -37,21 +38,12 @@ def process_data(file_path):
     return X, y, init_theta
 
 
-def sigmoid(z):
-    '''
-    This is the activation function for our hypothesis. The higher a predicted
-    value is, the more likely it will be classified as 1 and vice versa if to
-    be classified as 0.
-    '''
-    return 1 / (1 + np.exp(-z))
-
-
 def hypothesis(theta, X_train):
     '''
     The hypothesis function takes parameters theta and examples X to produce
     a predicted class.
     '''
-    return sigmoid(X_train.dot(theta))
+    return sm.sigmoid(X_train.dot(theta))
 
 
 def compute_cost(theta, X_train, y_train, reg_lambda=0):

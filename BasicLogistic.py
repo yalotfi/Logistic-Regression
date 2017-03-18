@@ -1,7 +1,6 @@
 import numpy as np
+import sigmoid as sm
 import process_csv as data
-from scipy.optimize import fmin_bfgs
-from scipy.optimize import minimize
 
 
 class BasicLogistic():
@@ -26,17 +25,6 @@ class BasicLogistic():
         self.init_theta = init_theta
         self.reg_lamda = reg_lamda
 
-    def sigmoid(self, z, derivative=False):
-        '''
-        Logistic Sigmoid function used for building classifiers. The
-        Derivative of the sigmoid is necessary in Neural Network classifiers.
-        '''
-        # Compute derivative or not
-        if not derivative:
-            return 1 / (1 + np.exp(-z))
-        else:
-            return z * (1 - z)
-
     def hypothesis(self, theta):
         '''
         The hypothesis function predicts the value of y given input x and
@@ -46,7 +34,7 @@ class BasicLogistic():
         This function is used in calculating the error and partial derivative
         for fitting the best decision boundary on the given data set.
         '''
-        return self.sigmoid(self.X_train.dot(theta.T))
+        return sm.sigmoid(self.X_train.dot(theta.T))
 
     def cost_function(self, theta):
         '''
@@ -73,28 +61,6 @@ class BasicLogistic():
         grad = 1 / m * self.X_train.T.dot(pred - self.y_train).T
 
         return [cost[0][0], grad[0]]
-
-    # def optimize(self, min_func='minimize'):
-    #     # Tuple of training examples
-    #     my_args = (self.X_train, self.y_train)
-
-    #     # Gradient Descent
-    #     # min_theta = minimize(fun=self.cost_function,
-    #     #                      x0=self.init_theta,
-    #     #                      args=my_args,
-    #     #                      method='TNC')
-
-    #     # BFGS algorithm
-    #     bfgs_theta = fmin_bfgs(self.cost_function,
-    #                            x0=self.init_theta,
-    #                            args=my_args,
-    #                            maxiter=400)
-
-    #     # Return minimized theta
-    #     if min_func == 'bfgs':
-    #         return bfgs_theta.x
-    #     else:
-    #         return min_theta.x
 
     def gradient_descent(self, alpha, max_iters):
         '''
