@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def sigmoid(z, derivative=False):
+def _sigmoid(z, derivative=False):
     '''
     Logistic Sigmoid function used for building classifiers. The
     Derivative of the sigmoid is necessary in Neural Network classifiers.
