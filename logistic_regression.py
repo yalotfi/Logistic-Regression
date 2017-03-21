@@ -1,6 +1,6 @@
 import numpy as np
-import sigmoid as sm
 from scipy.optimize import fmin
+from sigmoid import _sigmoid
 
 
 def process_data(file_path):
@@ -43,7 +43,7 @@ def hypothesis(theta, X_train):
     The hypothesis function takes parameters theta and examples X to produce
     a predicted class.
     '''
-    return sm.sigmoid(X_train.dot(theta))
+    return _sigmoid(X_train.dot(theta))
 
 
 def compute_cost(theta, X_train, y_train, reg_lambda=0):
