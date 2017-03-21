@@ -2,6 +2,34 @@ import numpy as np
 from sklearn.cross_validation import train_test_split
 
 
+def _process_data(file_path):
+    '''
+    Process the raw data set into 2D arrays of training and label examples.
+    This function should be expanded to include training, testing, and
+    cross validation sets. It also produces inital theta, outputting three
+    arrays.
+
+    **Important: This function will append an intercept column of ones.**
+    '''
+    # Read in the Data
+    raw_data = np.genfromtxt(file_path, delimiter=',')
+
+    # Examples happen to be in first two cols and labels in the third
+    X = np.array(raw_data[:, :-1])
+    y = np.array(raw_data[:, -1:])
+
+    # Save dimensions
+    m, n = X.shape
+
+    # Insert intercept column for linear algebra
+    X = np.insert(X, 0, 1, axis=1)
+
+    # Initial parameters set to zero defined by shape (3x1)
+    init_theta = np.zeros(((n + 1), 1))
+
+    return X, y, init_theta
+
+
 def process_csv(file_path, test_size=0.3):
     '''
     1) Load data from a file path and split into train and test sets based on

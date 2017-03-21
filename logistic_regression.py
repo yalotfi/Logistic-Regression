@@ -1,41 +1,7 @@
 import numpy as np
 from scipy.optimize import fmin
+from data import _process_data
 from sigmoid import _sigmoid
-
-
-def process_data(file_path):
-    '''
-    Process the raw data set into 2D arrays of training and label examples.
-    This function should be expanded to include training, testing, and
-    cross validation sets. It also produces inital theta, outputting three
-    arrays.
-    '''
-    # Read in the Data
-    raw_data = np.genfromtxt(file_path, delimiter=',')
-
-    # Examples happen to be in first two cols and labels in the third
-    X = np.array(raw_data[:, :-1])
-    y = np.array(raw_data[:, -1:])
-
-    # Save dimensions
-    m, n = X.shape
-
-    # Insert intercept column for linear algebra
-    X = np.insert(X, 0, 1, axis=1)
-
-    # Initial parameters set to zero defined by shape (3x1)
-    init_theta = np.zeros(((n + 1), 1))
-
-    # Console logs to confirm data structure
-    print('\nLog data sizes:')
-    print('Examples: {0}\nX transpose: {1}\n'.format(
-        X.shape, X.T.shape))
-    print('Labels: {0}\ny transpose: {1}\n'.format(
-        y.shape, y.T.shape))
-    print('Initial thetas: {0}\ntheta Transpose: {1}'.format(
-        init_theta.shape, init_theta.T.shape))
-
-    return X, y, init_theta
 
 
 def hypothesis(theta, X_train):
@@ -103,7 +69,7 @@ def training(theta, X_train, y_train, reg_lambda=0, max_iters=400):
 def main():
     # STEP 1: Process data
     file_path = 'Data/grades.txt'
-    X, y, init_theta = process_data(file_path)
+    X, y, init_theta = _process_data(file_path)
     # [X_train, X_test,
     #  y_train, y_test] = data.process_csv(file_path, test_size=0)
 
