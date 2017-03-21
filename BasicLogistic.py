@@ -1,6 +1,6 @@
 import numpy as np
 from sigmoid import _sigmoid
-import process_csv as data
+from data import _process_data
 
 
 class BasicLogistic():
@@ -18,12 +18,12 @@ class BasicLogistic():
         - Feature Mapping
     '''
 
-    def __init__(self, init_theta, X_train, y_train, reg_lamda):
+    def __init__(self, init_theta, X_train, y_train, reg_lambda):
         super().__init__()
         self.X_train = X_train
         self.y_train = y_train
         self.init_theta = init_theta
-        self.reg_lamda = reg_lamda
+        self.reg_lambda = reg_lambda
         self.m = len(self.y_train)
 
     def hypothesis(self, theta):
@@ -35,7 +35,7 @@ class BasicLogistic():
         This function is used in calculating the error and partial derivative
         for fitting the best decision boundary on the given data set.
         '''
-        return _sigmoid(self.X_train.dot(theta.T))
+        return _sigmoid(self.X_train.dot(theta))
 
     def cost_function(self, theta):
         '''
@@ -73,15 +73,20 @@ class BasicLogistic():
 
         return grads
 
-    def map_feature(self, X):
+    def optimize(self):
+        pass
+
+    def map_feature(self, factor):
+        pass
+
+    def plot_boundary(self):
         pass
 
 
 def main():
     # STEP 1: Process data
     file_path = 'Data/grades.txt'
-    [X_train, X_test,
-     y_train, y_test, theta] = data.process_csv(file_path)
+    [X_train, y_train, init_theta] = _process_data(file_path)
 
     # STEP 2: Hyperparameters
     # alpha = 0.000001
@@ -93,16 +98,19 @@ def main():
     print('y_train: {0} // y_train.T: {1}'.format(
         y_train.shape, y_train.T.shape))
     print('Theta: {0} // Theta.T: {1}'.format(
-        theta.shape, theta.T.shape))
+        init_theta.shape, init_theta.T.shape))
 
     # Step 3: Training
-    lr = BasicLogistic(theta, X_train, y_train, reg_lambda)
+    lr = BasicLogistic(init_theta, X_train, y_train, reg_lambda)
 
-    # pred = lr.hypothesis(theta)
+    # pred = lr.hypothesis(init_theta)
     # print('Hypothesis Shape: ', pred.shape)
 
-    # cost, grad = lr.cost_function(theta)
-    # print('Min_Cost: ', cost, grad)
+    # cost = lr.cost_function(init_theta)
+    # print('Min_Cost: ', cost)
+
+    grad = lr.compute_gradient(init_theta)
+    print('Min_Cost: ', grad)
 
 
 if __name__ == '__main__':
