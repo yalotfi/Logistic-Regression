@@ -82,8 +82,19 @@ class BasicLogistic():
             full_output=True)
         return optimized[0], optimized[1]
 
-    def map_feature(self, factor):
-        pass
+    def map_feature(self, X0, X1, factor):
+        '''
+        Map two input features to quadratic features to produce a complex
+        decision boundary for classification. To avoid an overfitted model
+        and generalize well, one should include a regularized term when
+        fitting mapped features.
+        '''
+        output = np.ones(X1.shape)
+        end = len(output)
+        for i in range(factor):
+            for j in range(i):
+                output[:, end + 1] = X0**(i - j) * X1**j
+        return output
 
     def plot_boundary(self):
         pass
