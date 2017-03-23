@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.optimize import fmin
 from sigmoid import _sigmoid
 from data import _process_data
 
@@ -11,7 +12,7 @@ class BasicLogistic():
         - Logistic Sigmoid function
         - Hypothesis Function
         - Cost function
-        - Gradient Descent
+        - Optimization
 
     Need Methods for:
         - Regularization
@@ -37,7 +38,7 @@ class BasicLogistic():
         '''
         return _sigmoid(self.X_train.dot(theta))
 
-    def cost_function(self, theta):
+    def compute_cost(self, theta):
         '''
         Cost function J(theta) to be minimized. Calculating the total error
         is done by finding the distance from the actual label. In this case,
@@ -51,7 +52,7 @@ class BasicLogistic():
         pred = self.hypothesis(theta)
         loss00 = -self.y_train.T.dot(np.log(pred))
         loss01 = (1 - self.y_train.T).dot(np.log(1 - pred))
-        reg_cost = self.reg_lamda / (2 * self.m) * theta.T.dot(theta)
+        reg_cost = self.reg_lambda / (2 * self.m) * theta.T.dot(theta)
         cost = const * (loss00 - loss01) + reg_cost
 
         # Return Cost
@@ -73,8 +74,13 @@ class BasicLogistic():
 
         return grads
 
-    def optimize(self):
-        pass
+    def optimize(self, theta, max_iters=400):
+        optimized = fmin(
+            self.compute_cost,
+            x0=theta,
+            maxiter=400,
+            full_output=True)
+        return optimized[0], optimized[1]
 
     def map_feature(self, factor):
         pass
@@ -86,31 +92,30 @@ class BasicLogistic():
 def main():
     # STEP 1: Process data
     file_path = 'Data/grades.txt'
-    [X_train, y_train, init_theta] = _process_data(file_path)
+    X_train, y_train, init_theta = _process_data(file_path)
 
     # STEP 2: Hyperparameters
-    # alpha = 0.000001
-    reg_lambda = 0  # Lambda value for regularization, if needed
+    reg_lambda = 0  # Regularization term, lambda
+    max_iters = 400  # For optimization
 
-    # Console logs to confirm data structure
-    print('X_train: {0} // X_train.T: {1}'.format(
-        X_train.shape, X_train.T.shape))
-    print('y_train: {0} // y_train.T: {1}'.format(
-        y_train.shape, y_train.T.shape))
-    print('Theta: {0} // Theta.T: {1}'.format(
-        init_theta.shape, init_theta.T.shape))
+    lr = BasicLogistic(init_theta, X_train, y_train, reg_lambda)
+    cost = lr.compute_cost(init_theta)
+    grad = lr.compute_gradient(init_theta)
+
+    print('\nLog cost of starting parameters, theta:')
+    print('Min_Cost: {0} and Initial gradients: {1}'.format(
+        cost, grad)
+    )
+
+    print('\nLog data structure of starting cost and theta:')
+    print('Data Types for Cost: {0} and Gradient: {1}'.format(
+        type(cost), type(grad))
+    )
 
     # Step 3: Training
-    lr = BasicLogistic(init_theta, X_train, y_train, reg_lambda)
-
-    # pred = lr.hypothesis(init_theta)
-    # print('Hypothesis Shape: ', pred.shape)
-
-    # cost = lr.cost_function(init_theta)
-    # print('Min_Cost: ', cost)
-
-    grad = lr.compute_gradient(init_theta)
-    print('Min_Cost: ', grad)
+    print('\nTraining Model:')
+    theta, min_cost = lr.optimize(init_theta, max_iters)
+    print('Optimized Thetas: {0}\nMinimum Cost: {1}'.format(theta, min_cost))
 
 
 if __name__ == '__main__':

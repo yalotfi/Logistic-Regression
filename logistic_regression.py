@@ -70,8 +70,6 @@ def main():
     # STEP 1: Process data
     file_path = 'Data/grades.txt'
     X, y, init_theta = _process_data(file_path)
-    # [X_train, X_test,
-    #  y_train, y_test] = data.process_csv(file_path, test_size=0)
 
     # STEP 2: Hyperparameters
     reg_lambda = 0
