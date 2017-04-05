@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.cross_validation import train_test_split
 
 
-def _process_data(file_path):
+def _process_data(file_path, label_index=0):
     '''
     Process the raw data set into 2D arrays of training and label examples.
     This function should be expanded to include training, testing, and
